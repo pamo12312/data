@@ -1,6 +1,9 @@
-"use client"
 import React, { useState, useEffect } from 'react';
 
+const initialPeople = [
+  { id: 1, name: 'John Doe', age: 30 },
+  { id: 2, name: 'Jane Smith', age: 25 },
+];
 
 function App() {
   const [people, setPeople] = useState([]);
@@ -9,27 +12,22 @@ function App() {
   const [editing, setEditing] = useState(null);
 
   useEffect(() => {
-    const savedPeople = localStorage.getItem('people');
+    const savedPeople = JSON.parse(localStorage.getItem('people'));
     if (savedPeople) {
-      setPeople(JSON.parse(savedPeople));
+      setPeople(savedPeople);
     } else {
-      const initialPeople = [
-        { id: 1, name: 'John Doe', age: 30 },
-        { id: 2, name: 'Jane Smith', age: 25 },
-      ];
       setPeople(initialPeople);
     }
   }, []);
 
-  const savePeople = (people) => {
+  useEffect(() => {
     localStorage.setItem('people', JSON.stringify(people));
-  };
+  }, [people]);
 
   const addPerson = () => {
     const newPerson = { id: Date.now(), name, age };
     const updatedPeople = [...people, newPerson];
     setPeople(updatedPeople);
-    savePeople(updatedPeople);
     setName('');
     setAge('');
   };
@@ -39,7 +37,6 @@ function App() {
         person.id === id ? { ...person, name, age } : person
     );
     setPeople(updatedPeople);
-    savePeople(updatedPeople);
     setName('');
     setAge('');
     setEditing(null);
@@ -48,7 +45,6 @@ function App() {
   const deletePerson = (id) => {
     const updatedPeople = people.filter(person => person.id !== id);
     setPeople(updatedPeople);
-    savePeople(updatedPeople);
   };
 
   const startEdit = (person) => {
